@@ -105,9 +105,6 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         combgen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Masculino", "Feminino", "Outro", "Prefiro nao dizer" }));
         combgen.addActionListener(this::combgenActionPerformed);
 
-        txtsenhaconf.setText("jPasswordField1");
-
-        txtsenha.setText("jPasswordField1");
         txtsenha.addActionListener(this::txtsenhaActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
