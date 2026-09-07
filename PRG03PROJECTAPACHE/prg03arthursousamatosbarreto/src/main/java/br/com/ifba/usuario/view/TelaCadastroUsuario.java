@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.ifba.usuario.view;
-
+import javax.swing.JOptionPane;
+import br.com.ifba.login.view.TelaLogin;
 /**
  *
  * @author PC
@@ -229,7 +230,10 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtloginActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        // volta pra tela de login
+        TelaLogin telaLogin = new TelaLogin();
+        telaLogin.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
@@ -243,6 +247,22 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         String login = txtlogin.getText();
         String senha = new String(txtsenha.getPassword());
         String confirmarSenha = new String(txtsenhaconf.getPassword());
+        
+        if (nome.isEmpty() || cpf.isEmpty() || dataNascimento.isEmpty()
+                || telefone.isEmpty() || email.isEmpty() || login.isEmpty()
+                || senha.isEmpty() || confirmarSenha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            // verifica se tudo e vazio
+        } else if (!senha.equals(confirmarSenha)) {
+            JOptionPane.showMessageDialog(this, "As senhas não coincidem.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            // verifica se as senhas nao sao iguais
+        } else {
+            // cria a conta
+            JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!",
+                    "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void combgenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combgenActionPerformed
