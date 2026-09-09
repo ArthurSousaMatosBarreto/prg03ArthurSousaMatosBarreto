@@ -5,6 +5,7 @@
 package br.com.ifba.usuario.view;
 import javax.swing.JOptionPane;
 import br.com.ifba.login.view.TelaLogin;
+import br.com.ifba.usuario.validar.ValidadorCadastro;
 /**
  *
  * @author PC
@@ -14,15 +15,6 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
 
-    public static boolean contemPalavraProibida(String texto){
-        String[] PalavraProibida = {"admin", "teste", "root", "senha123"};
-        for (String palavra : PalavraProibida) {
-        if (texto.equalsIgnoreCase(palavra)) {
-            return true;
-        }
-    }
-        return false;
-    }
     /**
      * cria tela de cadastro de usuario
      */
@@ -269,9 +261,9 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "As senhas não coincidem.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
             // verifica se as senhas nao sao iguais
-        } else if (contemPalavraProibida(senha)) {
-                JOptionPane.showMessageDialog(this,
-                    "Senha inválida: Login contém palavra não permitida.",
+        } else if (ValidadorCadastro.contemPalavraProibida(login)) {
+            JOptionPane.showMessageDialog(this,
+                    "Login contém palavra não permitida.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
             // cria a conta
