@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.ifba.login.view;
+import br.com.ifba.usuario.view.TelaCadastroUsuario;
 
 /**
  *
@@ -20,6 +21,8 @@ public class TelaLogin extends javax.swing.JFrame {
         Jtextfieldlogin.setEditable(false);
         Jtextfieldlogin.setFocusable(false);
         Jtextfieldlogin.setHighlighter(null);
+        lblCadastrese.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        
     }
 
     /**
@@ -64,7 +67,9 @@ public class TelaLogin extends javax.swing.JFrame {
 
         lblCadastrese.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblCadastrese.setForeground(new java.awt.Color(0, 0, 255));
+        lblCadastrese.setLabelFor(lblCadastrese);
         lblCadastrese.setText("Cadastre-se");
+        lblCadastrese.setToolTipText("");
         lblCadastrese.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lblCadastreseMouseClicked(evt);
@@ -166,7 +171,9 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSenhaActionPerformed
 
     private void lblCadastreseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCadastreseMouseClicked
-        // TODO add your handling code here:
+        TelaCadastroUsuario telaCadastro = new TelaCadastroUsuario();
+        telaCadastro.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_lblCadastreseMouseClicked
 
     private void JtextfieldloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtextfieldloginActionPerformed

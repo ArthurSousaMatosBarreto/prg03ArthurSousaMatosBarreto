@@ -9,16 +9,30 @@ import br.com.ifba.login.view.TelaLogin;
  *
  * @author PC
  */
+
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
 
+    public static boolean contemPalavraProibida(String texto){
+        String[] PalavraProibida = {"admin", "teste", "root", "senha123"};
+        for (String palavra : PalavraProibida) {
+        if (texto.equalsIgnoreCase(palavra)) {
+            return true;
+        }
+    }
+        return false;
+    }
     /**
-     * Creates new form TelaCadastroUsuario
+     * cria tela de cadastro de usuario
      */
     public TelaCadastroUsuario() {
         initComponents();
+        jtextfieldmain.setEditable(false);
+        jtextfieldmain.setFocusable(false);
+        jtextfieldmain.setHighlighter(null);
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,7 +43,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextField1 = new javax.swing.JTextField();
+        jtextfieldmain = new javax.swing.JTextField();
         jlabel6 = new javax.swing.JLabel();
         jlabel1 = new javax.swing.JLabel();
         jlabel2 = new javax.swing.JLabel();
@@ -53,12 +67,12 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextField1.setBackground(new java.awt.Color(0, 153, 0));
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(255, 255, 255));
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("Tela de Cadastro");
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+        jtextfieldmain.setBackground(new java.awt.Color(0, 153, 0));
+        jtextfieldmain.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jtextfieldmain.setForeground(new java.awt.Color(255, 255, 255));
+        jtextfieldmain.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jtextfieldmain.setText("Tela de Cadastro");
+        jtextfieldmain.addActionListener(this::jtextfieldmainActionPerformed);
 
         jlabel6.setText("Email:");
 
@@ -111,7 +125,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextField1)
+            .addComponent(jtextfieldmain)
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -148,7 +162,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jtextfieldmain, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -198,9 +212,9 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void jtextfieldmainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtextfieldmainActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_jtextfieldmainActionPerformed
 
     private void txtnomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnomeActionPerformed
         // TODO add your handling code here:
@@ -255,6 +269,10 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "As senhas não coincidem.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
             // verifica se as senhas nao sao iguais
+        } else if (contemPalavraProibida(senha)) {
+                JOptionPane.showMessageDialog(this,
+                    "Senha inválida: Login contém palavra não permitida.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
             // cria a conta
             JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!",
@@ -299,7 +317,6 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JComboBox<String> combgen;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel jlabel1;
     private javax.swing.JLabel jlabel2;
     private javax.swing.JLabel jlabel3;
@@ -309,6 +326,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     private javax.swing.JLabel jlabel7;
     private javax.swing.JLabel jlabel8;
     private javax.swing.JLabel jlabel9;
+    private javax.swing.JTextField jtextfieldmain;
     private javax.swing.JTextField txt_telefone;
     private javax.swing.JTextField txtcpf;
     private javax.swing.JTextField txtdata;
