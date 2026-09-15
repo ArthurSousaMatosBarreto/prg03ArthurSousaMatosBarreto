@@ -6,6 +6,7 @@ package br.com.ifba.usuario.view;
 import javax.swing.JOptionPane;
 import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
+import br.com.ifba.usuario.entity.Usuario;
 /**
  *
  * @author PC
@@ -243,7 +244,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         // pega todas as informacoes do cadastro
         String nome = txtnome.getText();
         String cpf = txtcpf.getText();
-        String genero = (String) combgen.getSelectedItem();
+        String genero = (String) combgen.getSelectedItem(); //combo list de genero
         String dataNascimento = txtdata.getText();
         String telefone = txt_telefone.getText();
         String email = txtemail.getText();
@@ -266,7 +267,17 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
                     "Login contém palavra não permitida.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
-            // cria a conta
+            Usuario Usuario = new Usuario();
+            //Captura cada valor de cada instancia com os valores digitados
+            Usuario.txtnome = nome;
+            Usuario.txtcpf = cpf;
+            Usuario.combgen = genero;
+            Usuario.txtdata = dataNascimento;
+            Usuario.txt_telefone = telefone;
+            Usuario.txtemail = email;
+            Usuario.txtlogin = login;
+            Usuario.txtsenha = senha;
+            //cria a conta com as informacoes salvas
             JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!",
                     "Cadastro", JOptionPane.INFORMATION_MESSAGE);
         }
