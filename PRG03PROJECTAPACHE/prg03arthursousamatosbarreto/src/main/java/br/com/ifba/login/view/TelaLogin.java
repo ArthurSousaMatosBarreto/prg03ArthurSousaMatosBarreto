@@ -4,6 +4,7 @@
  */
 package br.com.ifba.login.view;
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
+import br.com.ifba.usuario.entity.Usuario;
 
 /**
  *
@@ -155,11 +156,16 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        // 1.capturar o que foi digitado no campo        
+        //capturar o que foi digitado no campo        
         String loginDigitado = txtLogin.getText();
         String senhaDigitada = new String(txtSenha.getPassword());
         
-        // 2.usa as variaveis pra preencher o label
+        //cria o objeto usuario e preenche login/senha
+        Usuario usuario = new Usuario();
+        usuario.txtlogin = loginDigitado;
+        usuario.txtsenha = senhaDigitada;
+        
+        //usa as variaveis pra preencher o label
         lblResultado.setText(
          "<html>Login Digitado: " + loginDigitado + "<br>" +
          "Senha digitada: " + senhaDigitada + "</html>"

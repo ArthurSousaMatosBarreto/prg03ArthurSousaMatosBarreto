@@ -10,12 +10,12 @@ package br.com.ifba.usuario.entity;
  */
 public class Usuario {
     
-    String txtnome;
-    String txtcpf;
-    String combgen;
-    String txtdata;
-    String txt_telefone;
-    String txtemail;
-    String txtlogin;
-    String txtsenha;
+    public String txtnome;
+    public String txtcpf;
+    public String combgen;
+    public String txtdata;
+    public String txt_telefone;
+    public String txtemail;
+    public String txtlogin;
+    public String txtsenha;
 }
