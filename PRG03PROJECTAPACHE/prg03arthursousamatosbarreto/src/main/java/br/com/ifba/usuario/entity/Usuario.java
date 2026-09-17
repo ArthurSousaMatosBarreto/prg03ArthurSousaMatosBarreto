@@ -10,12 +10,70 @@ package br.com.ifba.usuario.entity;
  */
 public class Usuario {
     
-    public String txtnome;
-    public String txtcpf;
-    public String combgen;
-    public String txtdata;
-    public String txt_telefone;
-    public String txtemail;
-    public String txtlogin;
-    public String txtsenha;
+    private String txtnome;
+    private String txtcpf;
+    private String combgen;
+    private String txtdata;
+    private String txt_telefone;
+    private String txtemail;
+    private String txtlogin;
+    private String txtsenha;
+ 
+    public Usuario() { //construtor vazio
+    }
+
+    public Usuario(String nome, String cpf, String login, String senha) { //construtor com atributos
+        this.txtnome = nome;
+        this.txtcpf = cpf;
+        this.txtlogin = login;
+        this.txtsenha = senha;
+    }
+    public String getNome() { //getters e setters
+        return txtnome;
+    }
+    public void setNome(String nome) {
+        this.txtnome = nome;
+    }
+    public String getCpf() {
+        return txtcpf;
+    }
+    public void setCpf(String cpf) {
+        this.txtcpf = cpf;
+    }
+    public String getGenero() {
+        return combgen;
+    }
+    public void setGenero(String genero) {
+        this.combgen = genero;
+    }
+    public String getDataNascimento() {
+        return txtdata;
+    }
+    public void setDataNascimento(String dataNascimento) {
+        this.txtdata = dataNascimento;
+    }
+    public String getTelefone() {
+        return txt_telefone;
+    }
+    public void setTelefone(String telefone) {
+        this.txt_telefone = telefone;
+    }
+    public String getEmail() {
+        return txtemail;
+    }
+    public void setEmail(String email) {
+        this.txtemail = email;
+    }
+    public String getLogin() {
+        return txtlogin;
+    }
+    public void setLogin(String login) {
+        this.txtlogin = login;
+    }
+    public String getSenha() {
+        return txtsenha;
+    }
+    public void setSenha(String senha) {
+        this.txtsenha = senha;
+    }
 }
