@@ -156,19 +156,17 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        //capturar o que foi digitado no campo        
+        //captura o que foi escrito     
         String loginDigitado = txtLogin.getText();
         String senhaDigitada = new String(txtSenha.getPassword());
-        
-        //cria o objeto usuario e preenche login/senha
+        //cria o objeto usuario e preenche login e senha usando os setters
         Usuario usuario = new Usuario();
-        usuario.txtlogin = loginDigitado;
-        usuario.txtsenha = senhaDigitada;
-        
-        //usa as variaveis pra preencher o label
+        usuario.setLogin(loginDigitado);
+        usuario.setSenha(senhaDigitada);
+        //usa os getters pra preencher o JLabel
         lblResultado.setText(
-         "<html>Login Digitado: " + loginDigitado + "<br>" +
-         "Senha digitada: " + senhaDigitada + "</html>"
+                "<html>Login Digitado: " + usuario.getLogin() + "<br>"
+                + "Senha digitada: " + usuario.getSenha() + "</html>"
 );
     }//GEN-LAST:event_btnEntrarActionPerformed
 

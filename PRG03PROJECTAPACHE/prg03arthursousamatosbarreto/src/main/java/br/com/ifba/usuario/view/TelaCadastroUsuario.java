@@ -267,19 +267,15 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
                     "Login contém palavra não permitida.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
-            Usuario Usuario = new Usuario();
+            Usuario usuario = new Usuario(nome, cpf, login, senha);
             //Captura cada valor de cada instancia com os valores digitados
-            Usuario.txtnome = nome;
-            Usuario.txtcpf = cpf;
-            Usuario.combgen = genero;
-            Usuario.txtdata = dataNascimento;
-            Usuario.txt_telefone = telefone;
-            Usuario.txtemail = email;
-            Usuario.txtlogin = login;
-            Usuario.txtsenha = senha;
+            usuario.setGenero(genero);
+            usuario.setDataNascimento(dataNascimento);
+            usuario.setTelefone(telefone);
+            usuario.setEmail(email);
             //cria a conta com as informacoes salvas
-            JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!",
-                    "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
+            "Cadastro", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
