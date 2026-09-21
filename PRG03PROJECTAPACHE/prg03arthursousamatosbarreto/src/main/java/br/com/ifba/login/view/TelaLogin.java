@@ -5,6 +5,7 @@
 package br.com.ifba.login.view;
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
 import br.com.ifba.usuario.entity.Usuario;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -156,18 +157,19 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        //captura o que foi escrito     
         String loginDigitado = txtLogin.getText();
         String senhaDigitada = new String(txtSenha.getPassword());
-        //cria o objeto usuario e preenche login e senha usando os setters
-        Usuario usuario = new Usuario();
-        usuario.setLogin(loginDigitado);
-        usuario.setSenha(senhaDigitada);
-        //usa os getters pra preencher o JLabel
-        lblResultado.setText(
-                "<html>Login Digitado: " + usuario.getLogin() + "<br>"
-                + "Senha digitada: " + usuario.getSenha() + "</html>"
-);
+        Usuario usuarioCadastrado = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910"); // usuario fixo para testes de autenticacao
+        boolean acessoLiberado = usuarioCadastrado.autenticar(loginDigitado, senhaDigitada); //chama metodo de autenticacao
+        if (acessoLiberado) {
+            JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE);
+        }
+        lblResultado.setText( 
+                "<html>Login Digitado: " + loginDigitado + "<br>"
+                + "Senha digitada: " + senhaDigitada + "</html>"
+        );
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void txtSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSenhaActionPerformed
