@@ -252,30 +252,31 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         String senha = new String(txtsenha.getPassword());
         String confirmarSenha = new String(txtsenhaconf.getPassword());
         
-        if (nome.isEmpty() || cpf.isEmpty() || dataNascimento.isEmpty()
-                || telefone.isEmpty() || email.isEmpty() || login.isEmpty()
-                || senha.isEmpty() || confirmarSenha.isEmpty()) {
+        if (!ValidadorCadastro.camposPreenchidos(nome, cpf, dataNascimento, telefone, email, login, senha, confirmarSenha)) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
-            // verifica se tudo e vazio
         } else if (!senha.equals(confirmarSenha)) {
             JOptionPane.showMessageDialog(this, "As senhas não coincidem.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
-            // verifica se as senhas nao sao iguais
+        } else if (!ValidadorCadastro.cpfValido(cpf)) {
+            JOptionPane.showMessageDialog(this, "CPF inválido.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        } else if (!ValidadorCadastro.senhaForte(senha)) {
+            JOptionPane.showMessageDialog(this, "Senha deve ter entre 3 e 20 caracteres.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         } else if (ValidadorCadastro.contemPalavraProibida(login)) {
             JOptionPane.showMessageDialog(this,
                     "Login contém palavra não permitida.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
             Usuario usuario = new Usuario(nome, cpf, login, senha);
-            //Captura cada valor de cada instancia com os valores digitados
             usuario.setGenero(genero);
             usuario.setDataNascimento(dataNascimento);
             usuario.setTelefone(telefone);
             usuario.setEmail(email);
-            //cria a conta com as informacoes salvas
-            JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
-            "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
+                    "Cadastro", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
