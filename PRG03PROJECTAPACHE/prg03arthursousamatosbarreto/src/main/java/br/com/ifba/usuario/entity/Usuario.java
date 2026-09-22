@@ -3,12 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package br.com.ifba.usuario.entity;
+import br.com.ifba.usuario.interfaces.Autenticavel;
 
 /**
  *
  * @author PC
  */
-public class Usuario {
+public class Usuario implements Autenticavel{
     
     private String txtnome;
     private String txtcpf;
@@ -18,7 +19,12 @@ public class Usuario {
     private String txtemail;
     private String txtlogin;
     private String txtsenha;
+    
+    @Override
  
+    public boolean autenticar(String login, String senha) { //compara os parametros recebidos com os internos
+        return this.txtlogin.equals(login) && this.txtsenha.equals(senha); //sem acessar de fora, ja que login e senha continua private
+    }
     public Usuario() { //construtor vazio
     }
 
