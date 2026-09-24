@@ -30,6 +30,7 @@ public class Usuario implements Autenticavel{
         return this.txtlogin.equals(login) && this.txtsenha.equals(senha); //sem acessar de fora, ja que login e senha continua private
     }
     public Usuario() { //construtor vazio
+        this.tipoUsuario = TipoUsuario.ALUNO; //valor padrao p tipoUsuario
     }
 
     public Usuario(String nome, String cpf, String login, String senha) { //construtor com atributos
