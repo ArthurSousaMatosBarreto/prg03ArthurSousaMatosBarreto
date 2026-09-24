@@ -4,7 +4,9 @@
  */
 package br.com.ifba.usuario.entity;
 import br.com.ifba.usuario.interfaces.Autenticavel;
-
+import java.util.List; //add de lista
+import java.util.ArrayList; //add de array
+ 
 /**
  *
  * @author PC
@@ -19,6 +21,8 @@ public class Usuario implements Autenticavel{
     private String txtemail;
     private String txtlogin;
     private String txtsenha;
+    private Endereco endereco;
+    private TipoUsuario tipoUsuario;
     
     @Override
  
@@ -26,6 +30,7 @@ public class Usuario implements Autenticavel{
         return this.txtlogin.equals(login) && this.txtsenha.equals(senha); //sem acessar de fora, ja que login e senha continua private
     }
     public Usuario() { //construtor vazio
+        this.tipoUsuario = TipoUsuario.ALUNO; //valor padrao p tipoUsuario
     }
 
     public Usuario(String nome, String cpf, String login, String senha) { //construtor com atributos
@@ -81,5 +86,29 @@ public class Usuario implements Autenticavel{
     }
     public void setSenha(String senha) {
         this.txtsenha = senha;
+    }
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+    private List<Curso> cursos = new ArrayList<>();
+
+         // nao expoe a lista diretamente devolvendo copia
+    public List<Curso> getCursos() {
+        return new ArrayList<>(cursos);
+    }
+
+         // metodo que adiciona um curso sem deixar lista exposta, pois se retornar normal a pessoa pode alterar a lista original
+    public void adicionarCurso(Curso curso) {
+        this.cursos.add(curso);
+    }
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
+    }
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
     }
 }
