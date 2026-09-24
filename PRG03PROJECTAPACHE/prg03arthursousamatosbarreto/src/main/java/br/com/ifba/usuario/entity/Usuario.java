@@ -19,6 +19,7 @@ public class Usuario implements Autenticavel{
     private String txtemail;
     private String txtlogin;
     private String txtsenha;
+    private Endereco endereco;
     
     @Override
  
@@ -81,5 +82,12 @@ public class Usuario implements Autenticavel{
     }
     public void setSenha(String senha) {
         this.txtsenha = senha;
+    }
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
     }
 }

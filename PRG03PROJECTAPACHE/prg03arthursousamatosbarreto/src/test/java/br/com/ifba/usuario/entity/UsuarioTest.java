@@ -11,15 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author PC
  */
 public class UsuarioTest {
-     @Test
+    @Test
     public void autenticar_deveRetornarTrueParaCredenciaisCorretas() {
-        Usuario usuario = new Usuario("Maria Santos", "12345678900", "maria.santos", "senha1234");
-        assertTrue(usuario.autenticar("maria.santos", "senha1234"));
+        Usuario usuario = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910");
+        assertTrue(usuario.autenticar("arthur_sousa", "arthur0910"));
     }
 
     @Test
     public void autenticar_deveRetornarFalseParaSenhaIncorreta() {
-        Usuario usuario = new Usuario("Maria Santos", "12345678900", "maria.santos", "senha1234");
-        assertFalse(usuario.autenticar("maria.santos", "senhaErrada"));
+        Usuario usuario = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910");
+        assertFalse(usuario.autenticar("arthur_sousa", "senhaErrada"));
     }
 }
