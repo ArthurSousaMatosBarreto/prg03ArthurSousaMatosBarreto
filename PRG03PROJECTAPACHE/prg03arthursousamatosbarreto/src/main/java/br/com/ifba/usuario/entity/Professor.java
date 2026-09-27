@@ -1,13 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.ifba.usuario.entity;
 
 /**
- *
- * @author PC
+ * @author Arthur
  */
-public class Professor {
+public class Professor extends Usuario {
+
+    private String disciplina;
+
+    public Professor() {
+        super();
+        setTipoUsuario(TipoUsuario.PROFESSOR);
+    }
+
+    public Professor(String nome, String cpf, String login, String senha, String disciplina) {
+        super(nome, cpf, login, senha);
+        setTipoUsuario(TipoUsuario.PROFESSOR);
+        this.disciplina = disciplina;
+    }
+
+    public String getDisciplina() {
+        return disciplina;
+    }
+
+    public void setDisciplina(String disciplina) {
+        this.disciplina = disciplina;
+    }
     
+    public String descreverPapel() {
+        return "Professor responsavel pela disciplina de " + disciplina;
+    }
 }

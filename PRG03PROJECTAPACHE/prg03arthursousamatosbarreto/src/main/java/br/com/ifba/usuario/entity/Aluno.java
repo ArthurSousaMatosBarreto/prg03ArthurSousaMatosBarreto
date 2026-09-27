@@ -1,13 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.ifba.usuario.entity;
 
 /**
- *
- * @author PC
+ * @author Arthur
  */
-public class Aluno {
-    
+public class Aluno extends Usuario {
+
+    private String matricula;
+
+    public Aluno() {
+        super();
+        setTipoUsuario(TipoUsuario.ALUNO);
+    }
+
+    public Aluno(String nome, String cpf, String login, String senha, String matricula) {
+        super(nome, cpf, login, senha);
+        setTipoUsuario(TipoUsuario.ALUNO);
+        this.matricula = matricula;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public String descreverPapel() {
+        return "Aluno matriculado sob o numero " + matricula;
+    }
 }
