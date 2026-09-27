@@ -111,4 +111,7 @@ public class Usuario implements Autenticavel{
     public void setTipoUsuario(TipoUsuario tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
+    public String descreverPapel() {
+    return "Usuario do sistema academico";
+}
 }
