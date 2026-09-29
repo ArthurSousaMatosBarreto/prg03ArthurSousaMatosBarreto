@@ -6,6 +6,10 @@ package br.com.ifba.login.view;
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
 import br.com.ifba.usuario.entity.Usuario;
 import javax.swing.JOptionPane;
+import br.com.ifba.usuario.entity.Aluno;
+import br.com.ifba.usuario.entity.Professor;
+import br.com.ifba.usuario.entity.descreverPapel;
+
 
 /**
  *
@@ -160,6 +164,11 @@ public class TelaLogin extends javax.swing.JFrame {
         String loginDigitado = txtLogin.getText();
         String senhaDigitada = new String(txtSenha.getPassword());
         Usuario usuarioCadastrado = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910"); // usuario fixo para testes de autenticacao
+        Aluno aluno = new Aluno("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910", "2024001");
+        Professor professor = new Professor("Jonatas Bastos", "11122233344", "jonatas", "senha123", "POO");
+
+        System.out.println(descreverPapel.descrever(aluno));
+        System.out.println(descreverPapel.descrever(professor));
         boolean acessoLiberado = usuarioCadastrado.autenticar(loginDigitado, senhaDigitada); //chama metodo de autenticacao
         if (acessoLiberado) {
             JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
