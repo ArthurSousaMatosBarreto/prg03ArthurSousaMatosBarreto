@@ -26,6 +26,7 @@ public class Professor extends Usuario {
         this.disciplina = disciplina;
     }
     
+    @Override
     public String descreverPapel() {
         return "Professor responsavel pela disciplina de " + disciplina;
     }
