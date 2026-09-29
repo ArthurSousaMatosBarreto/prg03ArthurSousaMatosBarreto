@@ -26,6 +26,7 @@ public class Aluno extends Usuario {
         this.matricula = matricula;
     }
 
+    @Override
     public String descreverPapel() {
         return "Aluno matriculado sob o numero " + matricula;
     }
