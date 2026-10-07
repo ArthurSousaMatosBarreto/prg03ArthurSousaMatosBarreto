@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
 import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.repositorio.RepositorioUsuarioEmMemoria;
 /**
  *
  * @author PC
@@ -15,6 +16,7 @@ import br.com.ifba.usuario.entity.Usuario;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
+    private final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
 
     /**
      * cria tela de cadastro de usuario
@@ -270,16 +272,22 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
             Usuario usuario = new Usuario(nome, cpf, login, senha);
-            usuario.setGenero(genero);
-            usuario.setDataNascimento(dataNascimento);
-            usuario.setTelefone(telefone);
-            usuario.setEmail(email);
+        usuario.setGenero(genero);
+        usuario.setDataNascimento(dataNascimento);
+        usuario.setTelefone(telefone);
+        usuario.setEmail(email);
+
+        try {
+            repositorio.cadastrar(usuario);
             JOptionPane.showMessageDialog(this,
                     "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
                     "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCadastrarActionPerformed
-
+    }
     private void combgenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combgenActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_combgenActionPerformed
