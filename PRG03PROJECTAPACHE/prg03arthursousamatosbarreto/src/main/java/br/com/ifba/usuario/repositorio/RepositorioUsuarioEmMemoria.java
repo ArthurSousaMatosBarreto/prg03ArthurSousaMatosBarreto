@@ -17,9 +17,12 @@ public class RepositorioUsuarioEmMemoria { //guarda usuarios cadastrados em memo
     private final Map<String, Usuario> porLogin = new HashMap<>(); //indice por login pra busca rapida ao inves de percorrer
 
     public void cadastrar(Usuario usuario) {
-        usuarios.add(usuario);
-        porLogin.put(usuario.getLogin(), usuario);
+        if (porLogin.containsKey(usuario.getLogin())) {
+        throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
     }
+    usuarios.add(usuario);
+    porLogin.put(usuario.getLogin(), usuario);
+}
 
     public List<Usuario> listarTodos() {
         return new ArrayList<>(usuarios); //copia pra nao expor a lista interna
