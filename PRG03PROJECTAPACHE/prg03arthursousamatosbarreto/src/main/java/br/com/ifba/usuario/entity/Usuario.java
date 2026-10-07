@@ -6,6 +6,7 @@ package br.com.ifba.usuario.entity;
 import br.com.ifba.usuario.interfaces.Autenticavel;
 import java.util.List; //add de lista
 import java.util.ArrayList; //add de array
+import java.util.Objects;
  
 /**
  *
@@ -113,5 +114,21 @@ public class Usuario implements Autenticavel{
     }
     public String descreverPapel() {
     return "Usuario do sistema academico";
+}
+    @Override
+public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    Usuario outro = (Usuario) obj;
+    return Objects.equals(this.txtlogin, outro.txtlogin);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(txtlogin);
 }
 }
