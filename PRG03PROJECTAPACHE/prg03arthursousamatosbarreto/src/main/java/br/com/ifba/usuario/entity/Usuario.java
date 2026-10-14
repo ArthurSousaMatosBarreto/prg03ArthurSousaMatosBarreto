@@ -48,9 +48,6 @@ public class Usuario implements Autenticavel{
 
     @Transient
     private Endereco endereco; //posteriormente vai virar relacionamento mapeado
-
-    @Transient
-    private List<Curso> cursos = new ArrayList<>();
     
     @Override
  
@@ -122,6 +119,8 @@ public class Usuario implements Autenticavel{
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
+    
+    @Transient
     private List<Curso> cursos = new ArrayList<>();
 
          // nao expoe a lista diretamente devolvendo copia
