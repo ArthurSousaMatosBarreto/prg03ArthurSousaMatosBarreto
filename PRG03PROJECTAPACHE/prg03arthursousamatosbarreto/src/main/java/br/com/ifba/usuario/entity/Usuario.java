@@ -3,27 +3,51 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package br.com.ifba.usuario.entity;
+
 import br.com.ifba.usuario.interfaces.Autenticavel;
-import java.util.List; //add de lista
-import java.util.ArrayList; //add de array
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
  
 /**
  *
  * @author PC
  */
+@Entity
+@Table(name = "usuarios")
 public class Usuario implements Autenticavel{
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String txtnome;
+
+    @Column(nullable = false, length = 14)
     private String txtcpf;
+
     private String combgen;
+
+    @Column(name = "data_nascimento")
     private String txtdata;
+
     private String txt_telefone;
     private String txtemail;
+
+    @Column(nullable = false, unique = true)
     private String txtlogin;
+
+    @Column(nullable = false)
     private String txtsenha;
-    private Endereco endereco;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_usuario")
     private TipoUsuario tipoUsuario;
+
+    @Transient
+    private Endereco endereco; //posteriormente vai virar relacionamento mapeado
     
     @Override
  
@@ -95,6 +119,8 @@ public class Usuario implements Autenticavel{
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
+    
+    @Transient
     private List<Curso> cursos = new ArrayList<>();
 
          // nao expoe a lista diretamente devolvendo copia
@@ -131,4 +157,6 @@ public boolean equals(Object obj) {
 public int hashCode() {
     return Objects.hash(txtlogin);
 }
+
+ public Long getId() { return id; }
 }
