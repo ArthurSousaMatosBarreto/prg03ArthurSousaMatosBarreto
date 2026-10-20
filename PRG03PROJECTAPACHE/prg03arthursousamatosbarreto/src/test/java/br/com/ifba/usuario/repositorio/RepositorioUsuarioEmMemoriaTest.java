@@ -1,6 +1,7 @@
 package br.com.ifba.usuario.repositorio;
 
 import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,13 +27,35 @@ public class RepositorioUsuarioEmMemoriaTest {
         repositorio.cadastrar(jonatas);
 
         assertEquals(arthur, repositorio.buscarPorLogin("arthur_sousa"));
+  
+    }@Test
+    public void buscarPorLogin_comLoginInexistente_lancaExcecao() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        UsuarioNaoEncontradoException erro = assertThrows(UsuarioNaoEncontradoException.class,
+                () -> repositorio.buscarPorLogin("nao_existe"));
+        assertTrue(erro.getMessage().contains("nao_existe"));
     }
 
     @Test
-    public void buscarPorLogin_comLoginInexistente_devolveNull() {
+    public void buscarPorLogin_comLoginExistente_naoLancaExcecao() {
         RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        repositorio.cadastrar(new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910"));
+        assertDoesNotThrow(() -> repositorio.buscarPorLogin("arthur_sousa"));
+    }
 
-        assertNull(repositorio.buscarPorLogin("nao_existe"));
+    @Test
+    public void buscarPorLoginComList_comLoginInexistente_lancaExcecao() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        assertThrows(UsuarioNaoEncontradoException.class,
+                () -> repositorio.buscarPorLoginComList("nao_existe"));
+    }
+
+    @Test
+    public void buscarPorLoginComList_comLoginExistente_naoLancaExcecao() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        Usuario arthur = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910");
+        repositorio.cadastrar(arthur);
+        assertEquals(arthur, repositorio.buscarPorLoginComList("arthur_sousa"));
     }
 
     @Test
