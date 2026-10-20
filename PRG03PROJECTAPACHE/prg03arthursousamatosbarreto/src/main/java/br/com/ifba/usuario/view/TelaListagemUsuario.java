@@ -1,6 +1,10 @@
 package br.com.ifba.usuario.view;
 
 import br.com.ifba.login.view.TelaLogin;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
+import jakarta.persistence.PersistenceException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,6 +19,10 @@ import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -43,7 +51,12 @@ public class TelaListagemUsuario extends JFrame {
     private static final int COL_REMOVER = 3;
     private static final int COL_EDITAR = 4;
 
-    private final CampoComDica txtBusca = new CampoComDica("Procurar...", 14);
+    private final UsuarioDao dao = new UsuarioDao();
+    // usuarios que estao na tabela agora, na mesma ordem das linhas
+    private List<Usuario> usuariosExibidos = new ArrayList<>();
+    private DefaultTableModel modelo;
+
+    private final CampoComDica txtBusca = new CampoComDica("Procurar por nome...", 14);
     private final JButton btnNovo = new JButton(new IconeMais());
     private final JButton btnHomescreen = new JButton("Homescreen");
     private final JTable tblUsuarios;
@@ -59,6 +72,8 @@ public class TelaListagemUsuario extends JFrame {
 
         tblUsuarios = criarTabela();
         add(new JScrollPane(tblUsuarios), BorderLayout.CENTER);
+
+        carregar(); // mostra os usuarios do banco ao abrir a tela
     }
 
     // barra de cima: busca (esquerda), "+" (centro) e Homescreen (direita)
@@ -71,7 +86,15 @@ public class TelaListagemUsuario extends JFrame {
         JPanel campoBusca = new JPanel(new BorderLayout(6, 0));
         campoBusca.setBackground(Color.WHITE);
         campoBusca.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        campoBusca.add(new JLabel(new IconeLupa()), BorderLayout.WEST);
+        JLabel lblLupa = new JLabel(new IconeLupa());
+        lblLupa.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        lblLupa.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                carregar();
+            }
+        });
+        campoBusca.add(lblLupa, BorderLayout.WEST);
         txtBusca.setBorder(null);
         campoBusca.add(txtBusca, BorderLayout.CENTER);
         barra.add(campoBusca, BorderLayout.WEST);
@@ -79,7 +102,7 @@ public class TelaListagemUsuario extends JFrame {
         // botao "+" abre a tela de cadastro
         btnNovo.setToolTipText("Cadastrar novo usuário");
         btnNovo.setPreferredSize(new Dimension(120, 30));
-        btnNovo.addActionListener(e -> new TelaCadastroUsuario().setVisible(true));
+        btnNovo.addActionListener(e -> abrirCadastro());
         JPanel centro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centro.setOpaque(false);
         centro.add(btnNovo);
@@ -92,15 +115,15 @@ public class TelaListagemUsuario extends JFrame {
         });
         barra.add(btnHomescreen, BorderLayout.EAST);
 
-        // busca na lista abaixo: sem logica ainda (Parte 2)
-        txtBusca.addActionListener(e -> { });
+        // busca por nome (Enter no campo ou clique na lupa); campo vazio mostra todos
+        txtBusca.addActionListener(e -> carregar());
 
         return barra;
     }
 
     // tabela: NOME | LOGIN | TIPO | REMOVER | EDITAR (sem senha, ver RETROSPECTIVA.md)
     private JTable criarTabela() {
-        DefaultTableModel modelo = new DefaultTableModel(
+        modelo = new DefaultTableModel(
                 new Object[]{"NOME", "LOGIN", "TIPO", "REMOVER", "EDITAR"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -113,10 +136,6 @@ public class TelaListagemUsuario extends JFrame {
                 return (coluna == COL_REMOVER || coluna == COL_EDITAR) ? Icon.class : String.class;
             }
         };
-
-        // linhas de exemplo, so para a tela nao ficar vazia: a Parte 2 troca pelos dados do banco
-        modelo.addRow(new Object[]{"Arthur Sousa", "arthur_sousa", "ALUNO", new IconeLixeira(), new IconeEditar()});
-        modelo.addRow(new Object[]{"Jonatas Bastos", "jonatas", "PROFESSOR", new IconeLixeira(), new IconeEditar()});
 
         JTable tabela = new JTable(modelo);
         tabela.setRowHeight(34);
@@ -137,17 +156,17 @@ public class TelaListagemUsuario extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int linha = tabela.rowAtPoint(e.getPoint());
                 int coluna = tabela.columnAtPoint(e.getPoint());
-                if (linha < 0) {
+                if (linha < 0 || linha >= usuariosExibidos.size()) {
                     return;
                 }
+                Usuario usuario = usuariosExibidos.get(tabela.convertRowIndexToModel(linha));
                 if (coluna == COL_REMOVER) {
-                    confirmarExclusao();
+                    confirmarExclusao(usuario);
                 } else if (coluna == COL_EDITAR) {
-                    new TelaEdicaoUsuario().setVisible(true);
+                    abrirEdicao(usuario);
                 }
             }
         });
-
         // cursor de "mao" em cima dos icones
         tabela.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -161,25 +180,77 @@ public class TelaListagemUsuario extends JFrame {
 
         return tabela;
     }
-
-    // JOptionPane que pergunta se o usuario deseja excluir
-    private void confirmarExclusao() {
+    // busca no banco (todos, ou so os que contem o texto digitado) e atualiza a tabela
+    private void carregar() {
+        String termo = txtBusca.getText().trim();
+        try {
+            List<Usuario> lista = termo.isEmpty() ? dao.listar() : dao.buscarPorNome(termo);
+            preencherTabela(lista);
+        } catch (PersistenceException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Não foi possível carregar os usuários. Verifique a conexão com o banco de dados.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    // senha nunca vai para a tabela (ver RETROSPECTIVA.md)
+    private void preencherTabela(List<Usuario> lista) {
+        usuariosExibidos = lista;
+        modelo.setRowCount(0);
+        for (Usuario u : lista) {
+            String tipo = u.getTipoUsuario() == null ? "-" : u.getTipoUsuario().name();
+            modelo.addRow(new Object[]{u.getNome(), u.getLogin(), tipo, new IconeLixeira(), new IconeEditar()});
+        }
+    }
+    // quando a outra tela fecha, a listagem busca os dados de novo
+    private void recarregarAoFechar(JFrame tela) {
+        tela.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                carregar();
+            }
+        });
+    }
+    private void abrirCadastro() {
+        TelaCadastroUsuario tela = new TelaCadastroUsuario();
+        // fechar o cadastro pelo X nao pode encerrar o sistema inteiro quando ele foi aberto daqui
+        tela.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        recarregarAoFechar(tela);
+        tela.setVisible(true);
+    }
+    private void abrirEdicao(Usuario usuario) {
+        TelaEdicaoUsuario tela = new TelaEdicaoUsuario(usuario);
+        recarregarAoFechar(tela);
+        tela.setVisible(true);
+    }
+    // JOptionPane pergunta se o usuario deseja excluir; so remove se confirmar
+    private void confirmarExclusao(Usuario usuario) {
         int opcao = JOptionPane.showConfirmDialog(this,
                 "Deseja realmente excluir este usuário?",
                 "Confirmar exclusão", JOptionPane.YES_NO_OPTION);
-        if (opcao == JOptionPane.YES_OPTION) {
-            // exclusao de verdade fica para a Parte 2
+        if (opcao != JOptionPane.YES_OPTION) {
+            return;
         }
+        try {
+            dao.remover(usuario.getId());
+            carregar();
+            // so chega aqui se removeu de verdade
+            JOptionPane.showMessageDialog(this, "Usuário excluído com sucesso!",
+                    "Exclusão", JOptionPane.INFORMATION_MESSAGE);
+        } catch (UsuarioNaoEncontradoException e) {
+            // ja tinha sido apagado por outro lado: avisa e atualiza a lista
+            JOptionPane.showMessageDialog(this, e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            carregar();
+        } catch (PersistenceException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Não foi possível excluir o usuário. Verifique a conexão com o banco de dados.",
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     }
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> new TelaListagemUsuario().setVisible(true));
     }
-
-    // ---------------------------------------------------------------
-    // Componentes auxiliares (icones desenhados em codigo, sem arquivos)
-    // ---------------------------------------------------------------
-
     /** Campo de texto que mostra uma dica enquanto esta vazio. */
     private static class CampoComDica extends JTextField {
         private final String dica;
@@ -188,7 +259,6 @@ public class TelaListagemUsuario extends JFrame {
             super(colunas);
             this.dica = dica;
         }
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -200,10 +270,9 @@ public class TelaListagemUsuario extends JFrame {
                 int y = (getHeight() + g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent()) / 2;
                 g2.drawString(dica, in.left, y);
                 g2.dispose();
-            }
-        }
     }
-
+    }
+    }
     /** Base dos icones 20x20 desenhados com Graphics2D. */
     private abstract static class IconeDesenhado implements Icon {
         @Override
@@ -216,20 +285,16 @@ public class TelaListagemUsuario extends JFrame {
             desenhar(g2);
             g2.dispose();
         }
-
         abstract void desenhar(Graphics2D g2);
-
         @Override
         public int getIconWidth() {
             return 20;
         }
-
         @Override
         public int getIconHeight() {
             return 20;
         }
     }
-
     private static class IconeLixeira extends IconeDesenhado {
         @Override
         void desenhar(Graphics2D g2) {
@@ -241,7 +306,6 @@ public class TelaListagemUsuario extends JFrame {
             g2.drawLine(12, 9, 12, 15);
         }
     }
-
     private static class IconeEditar extends IconeDesenhado {
         @Override
         void desenhar(Graphics2D g2) {
@@ -250,7 +314,6 @@ public class TelaListagemUsuario extends JFrame {
             g2.drawLine(8, 12, 16, 4);            // lapis
         }
     }
-
     private static class IconeLupa extends IconeDesenhado {
         @Override
         void desenhar(Graphics2D g2) {
@@ -258,13 +321,12 @@ public class TelaListagemUsuario extends JFrame {
             g2.drawLine(11, 11, 17, 17);
         }
     }
-
     private static class IconeMais extends IconeDesenhado {
         @Override
         void desenhar(Graphics2D g2) {
             g2.drawOval(2, 2, 16, 16);
             g2.drawLine(10, 6, 10, 14);
             g2.drawLine(6, 10, 14, 10);
-        }
-    }
+}
+}
 }
