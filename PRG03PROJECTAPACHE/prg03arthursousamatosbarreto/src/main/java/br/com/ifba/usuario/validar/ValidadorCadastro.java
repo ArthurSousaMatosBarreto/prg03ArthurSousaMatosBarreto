@@ -39,7 +39,7 @@ public class ValidadorCadastro {
         }
         String[] palavrasProibidas = {"admin", "teste", "root", "senha123"};
         for (String palavra : palavrasProibidas) {
-            if (texto.equalsIgnoreCase(palavra)) {
+            if (texto.toLowerCase().contains(palavra)) {
                 return true;
             }
         }

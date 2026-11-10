@@ -63,6 +63,7 @@ public class Usuario implements Autenticavel{
         this.txtcpf = cpf;
         this.txtlogin = login;
         this.txtsenha = senha;
+        this.tipoUsuario = TipoUsuario.ALUNO;
     }
     public String getNome() { //getters e setters
         return txtnome;

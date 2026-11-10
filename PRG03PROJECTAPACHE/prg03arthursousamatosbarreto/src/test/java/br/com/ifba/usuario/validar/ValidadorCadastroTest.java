@@ -61,4 +61,38 @@ public class ValidadorCadastroTest {
     public void camposPreenchidos_deveRetornarFalseQuandoAlgumNulo() {
         assertFalse(ValidadorCadastro.camposPreenchidos("Arthur", null));
     }
+    @Test
+    public void contemPalavraProibida_loginIgualAPalavraProibida_deveRetornarTrue() {
+        assertTrue(ValidadorCadastro.contemPalavraProibida("admin"));
+    }
+
+    @Test
+    public void contemPalavraProibida_loginQueContemPalavraEmMaiuscula_deveRetornarTrue() {
+        assertTrue(ValidadorCadastro.contemPalavraProibida("Admin123"));
+    }
+
+    @Test
+    public void contemPalavraProibida_loginNormal_deveRetornarFalse() {
+        assertFalse(ValidadorCadastro.contemPalavraProibida("arthur_sousa"));
+    }
+
+    @Test
+    public void contemPalavraProibida_deveRetornarFalseParaNulo() {
+        assertFalse(ValidadorCadastro.contemPalavraProibida(null));
+    }
+
+    @Test
+    public void senhaForte_comVinteCaracteres_deveRetornarTrue() {
+        assertTrue(ValidadorCadastro.senhaForte("a".repeat(20)));
+    }
+
+    @Test
+    public void senhaForte_comVinteEUmCaracteres_deveRetornarFalse() {
+        assertFalse(ValidadorCadastro.senhaForte("a".repeat(21)));
+    }
+
+    @Test
+    public void cpfValido_comPontuacao_deveRetornarTrue() {
+        assertTrue(ValidadorCadastro.cpfValido("123.456.789-00"));
+    }
 }
