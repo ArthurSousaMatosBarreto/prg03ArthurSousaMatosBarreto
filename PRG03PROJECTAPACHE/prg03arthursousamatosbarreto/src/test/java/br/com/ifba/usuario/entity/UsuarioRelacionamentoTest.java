@@ -46,4 +46,9 @@ public class UsuarioRelacionamentoTest {
         usuario.setTipoUsuario(TipoUsuario.PROFESSOR);
         assertEquals(TipoUsuario.PROFESSOR, usuario.getTipoUsuario());
     }
+    @Test
+    public void construtorComParametros_deveNascerComTipoAluno() {
+        Usuario usuario = new Usuario("Arthur", "12345678900", "arthur_sousa", "arthur0910");
+        assertEquals(TipoUsuario.ALUNO, usuario.getTipoUsuario());
+    }
 }

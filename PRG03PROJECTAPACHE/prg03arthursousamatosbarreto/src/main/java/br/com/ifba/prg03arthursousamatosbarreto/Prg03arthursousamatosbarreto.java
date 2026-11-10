@@ -1,16 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package br.com.ifba.prg03arthursousamatosbarreto;
 
-/**
- *
- * @author PC
- */
+import br.com.ifba.infrastructure.util.JPAUtil;
+import br.com.ifba.login.view.TelaLogin;
+
 public class Prg03arthursousamatosbarreto {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Runtime.getRuntime().addShutdownHook(new Thread(JPAUtil::fechar)); //fecha o JPA qnd o sistema encerra
+        java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
     }
 }

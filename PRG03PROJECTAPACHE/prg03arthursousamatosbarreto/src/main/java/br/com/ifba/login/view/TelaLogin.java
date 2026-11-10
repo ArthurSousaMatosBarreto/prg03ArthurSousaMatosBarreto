@@ -9,6 +9,9 @@ import javax.swing.JOptionPane;
 import br.com.ifba.usuario.entity.Aluno;
 import br.com.ifba.usuario.entity.Professor;
 import br.com.ifba.usuario.entity.descreverPapel;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
+import jakarta.persistence.PersistenceException;
 
 
 /**
@@ -163,17 +166,19 @@ public class TelaLogin extends javax.swing.JFrame {
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         String loginDigitado = txtLogin.getText();
         String senhaDigitada = new String(txtSenha.getPassword());
-        Usuario usuarioCadastrado = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910"); // usuario fixo para testes de autenticacao
-        Aluno aluno = new Aluno("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910", "2024001");
-        Professor professor = new Professor("Jonatas Bastos", "11122233344", "jonatas", "senha123", "POO");
 
-        System.out.println(descreverPapel.descrever(aluno));
-        System.out.println(descreverPapel.descrever(professor));
-        boolean acessoLiberado = usuarioCadastrado.autenticar(loginDigitado, senhaDigitada); //chama metodo de autenticacao
-        if (acessoLiberado) {
-            JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE);
+        try {
+            Usuario usuario = new UsuarioDao().buscarPorLogin(loginDigitado);
+            if (usuario.autenticar(loginDigitado, senhaDigitada)) {
+                JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (UsuarioNaoEncontradoException e) {
+            JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE); 
+        } catch (PersistenceException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Não foi possível acessar o banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
         lblResultado.setText( 
                 "<html>Login Digitado: " + loginDigitado + "<br>"
