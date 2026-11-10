@@ -1,3 +1,6 @@
-## Atributos de Usuario que não devem aparecer numa tela de listagem
-`senha` nunca deve ser exibida (dado sensível). `cpf`, `telefone`, `dataNascimento` e `email` também não precisam estar na listagem, pois são dados pessoais que só fazem sentido no cadastro ou numa tela de detalhe. 
-`genero` também fica de fora, porque não ajuda a identificar o usuário na lista. A listagem mostra apenas `nome`, `login` e `tipoUsuario`.
+Retrospectiva — Checkpoint 1
+Por causa da revisão do Victor, renomeei os atributos de Usuario para a linguagem do domínio (nome, login, senha...), mantendo as colunas do banco com @Column(name=...), e troquei os limites da senha por constantes (TAMANHO_SENHA_MINIMO e TAMANHO_SENHA_MAXIMO).
+Por causa da revisão do Henry, os dois construtores de Usuario passaram a definir o mesmo tipo inicial, o tipo de Aluno e Professor ficou fixo (setTipoUsuario protegido), o CPF só aceita 11 dígitos (com ou sem pontuação), autenticar não lança mais exceção em usuário sem credenciais e o ícone do login passou a ser carregado pelo classpath.
+A regra de palavras proibidas virou "contém" (bloqueia admin123) e cada correção ganhou teste; mantive apenas a matricula de Aluno sem validação, porque ainda não existe tela que cadastre alunos.
+Revisando o código dos colegas, aprendi que um comentário só ajuda quando diz onde está o problema, o que ele causa e como resolver, e que marcar a severidade ([bloqueante], [sugestão], [dúvida], [elogio]) deixa claro o que é urgente e o que é melhoria.
+Também aprendi a ler o código como quem usa a classe: foi assim que encontrei problemas que a tela esconde, e receber esse mesmo olhar sobre o meu projeto mostrou erros que eu não tinha visto (tipo nulo, NullPointerException, CPF com letras).

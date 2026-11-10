@@ -14,3 +14,7 @@ Atividade 15 - Collections
 List vs Map na busca por login
 Com a List, buscar um login percorre a lista inteira item por item (pior caso: compara com todos) — com 10 usuários isso é rápido, mas com 10 mil, o tempo cresce proporcionalmente (O(n)).
 Com o Map, a busca vai direto na posição calculada pela chave (login), sem percorrer nada — seja com 10 ou 10 mil usuários, o tempo praticamente não muda (O(1)).
+
+Revisando o codigo:
+- Construtor vazio: usado pelo JPA/Hibernate e pelas telas que preenchem os campos aos poucos com os setters.
+- Construtor com nome, cpf, login e senha: usado no cadastro, onde esses quatro dados obrigatórios já existem e o objeto já nasce válido.

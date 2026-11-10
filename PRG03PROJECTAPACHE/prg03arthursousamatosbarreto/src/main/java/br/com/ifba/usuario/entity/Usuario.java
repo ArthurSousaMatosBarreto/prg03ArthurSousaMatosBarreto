@@ -56,7 +56,10 @@ public class Usuario implements Autenticavel{
     @Override
  
     public boolean autenticar(String login, String senha) { //compara os parametros recebidos com os internos
-        return this.login.equals(login) && this.senha.equals(senha); //sem acessar de fora, ja que login e senha continua private
+        if (this.login == null || this.senha == null) {
+            return false;
+        }
+        return this.login.equals(login) && this.senha.equals(senha);
     }
     public Usuario() { //construtor vazio
         this.tipoUsuario = TipoUsuario.ALUNO; //valor padrao p tipoUsuario
@@ -140,7 +143,7 @@ public class Usuario implements Autenticavel{
     public TipoUsuario getTipoUsuario() {
         return tipoUsuario;
     }
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+    protected void setTipoUsuario(TipoUsuario tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
     public String descreverPapel() {

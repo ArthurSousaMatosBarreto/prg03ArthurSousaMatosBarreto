@@ -51,4 +51,10 @@ public class UsuarioRelacionamentoTest {
         Usuario usuario = new Usuario("Arthur", "12345678900", "arthur_sousa", "arthur0910");
         assertEquals(TipoUsuario.ALUNO, usuario.getTipoUsuario());
     }
+    @Test
+    public void getCursos_alterarListaRetornada_naoAfetaOUsuario() {
+        Usuario usuario = new Usuario();
+        usuario.getCursos().add(new Curso("ADS", 800));
+        assertEquals(0, usuario.getCursos().size());
+    }
 }

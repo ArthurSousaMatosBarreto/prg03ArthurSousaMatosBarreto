@@ -22,4 +22,10 @@ public class UsuarioTest {
         Usuario usuario = new Usuario("Arthur Sousa", "5729589233", "arthur_sousa", "arthur0910");
         assertFalse(usuario.autenticar("arthur_sousa", "senhaErrada"));
     }
+    @Test
+    public void autenticar_usuarioSemCredenciais_deveRetornarFalseSemLancarExcecao() {
+        Usuario usuario = new Usuario();
+        assertFalse(usuario.autenticar("arthur_sousa", "arthur0910"));
+        assertFalse(usuario.autenticar(null, null));
+    }
 }

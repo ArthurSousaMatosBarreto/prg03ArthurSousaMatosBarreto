@@ -12,12 +12,11 @@ package br.com.ifba.usuario.validar;
 public class ValidadorCadastro {
     public static final int TAMANHO_SENHA_MINIMO = 3;
     public static final int TAMANHO_SENHA_MAXIMO = 20;
-    public static boolean cpfValido(String cpf) { //validacao de cpf se tem exatamente 11 digitos ignorando pontuacao e hifen
+    public static boolean cpfValido(String cpf) { //aceita so 11 digitos, com ou sem pontuacao (000.000.000-00)
         if (cpf == null) {
             return false;
         }
-        String somenteNumeros = cpf.replaceAll("[^0-9]", "");
-        return somenteNumeros.length() == 11;
+        return cpf.matches("\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}");
     }
 
     public static boolean senhaForte(String senha) { 

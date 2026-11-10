@@ -95,4 +95,8 @@ public class ValidadorCadastroTest {
     public void cpfValido_comPontuacao_deveRetornarTrue() {
         assertTrue(ValidadorCadastro.cpfValido("123.456.789-00"));
     }
+    @Test
+    public void cpfValido_comLetrasEOnzeDigitos_deveRetornarFalse() {
+        assertFalse(ValidadorCadastro.cpfValido("abc12345678900xyz"));
+    }
 }

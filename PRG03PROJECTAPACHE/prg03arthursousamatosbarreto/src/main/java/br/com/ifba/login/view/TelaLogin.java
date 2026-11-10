@@ -57,7 +57,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\PC\\Desktop\\diversos\\faculdade\\POO\\atividade 01\\PRG03PROJECTAPACHE\\prg03arthursousamatosbarreto\\src\\main\\resources\\br\\com\\ifba\\login\\imagens\\ifba.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/ifba/login/imagens/ifba.png"))); // NOI18N
 
         jLabel2.setText("Sistema Acadêmico ");
 
