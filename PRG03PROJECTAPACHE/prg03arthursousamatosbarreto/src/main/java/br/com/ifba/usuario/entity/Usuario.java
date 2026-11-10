@@ -22,25 +22,29 @@ public class Usuario implements Autenticavel{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String txtnome;
+    @Column(name = "txtnome", nullable = false)
+    private String nome;
 
-    @Column(nullable = false, length = 14)
-    private String txtcpf;
+    @Column(name = "txtcpf", nullable = false, length = 14)
+    private String cpf;
 
-    private String combgen;
+    @Column(name = "combgen")
+    private String genero;
 
     @Column(name = "data_nascimento")
-    private String txtdata;
+    private String dataNascimento;
 
-    private String txt_telefone;
-    private String txtemail;
+    @Column(name = "txt_telefone")
+    private String telefone;
 
-    @Column(nullable = false, unique = true)
-    private String txtlogin;
+    @Column(name = "txtemail")
+    private String email;
 
-    @Column(nullable = false)
-    private String txtsenha;
+    @Column(name = "txtlogin", nullable = false, unique = true)
+    private String login;
+
+    @Column(name = "txtsenha", nullable = false)
+    private String senha;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_usuario")
@@ -52,66 +56,66 @@ public class Usuario implements Autenticavel{
     @Override
  
     public boolean autenticar(String login, String senha) { //compara os parametros recebidos com os internos
-        return this.txtlogin.equals(login) && this.txtsenha.equals(senha); //sem acessar de fora, ja que login e senha continua private
+        return this.login.equals(login) && this.senha.equals(senha); //sem acessar de fora, ja que login e senha continua private
     }
     public Usuario() { //construtor vazio
         this.tipoUsuario = TipoUsuario.ALUNO; //valor padrao p tipoUsuario
     }
 
     public Usuario(String nome, String cpf, String login, String senha) { //construtor com atributos
-        this.txtnome = nome;
-        this.txtcpf = cpf;
-        this.txtlogin = login;
-        this.txtsenha = senha;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.login = login;
+        this.senha = senha;
         this.tipoUsuario = TipoUsuario.ALUNO;
     }
     public String getNome() { //getters e setters
-        return txtnome;
+        return nome;
     }
     public void setNome(String nome) {
-        this.txtnome = nome;
+        this.nome = nome;
     }
     public String getCpf() {
-        return txtcpf;
+        return cpf;
     }
     public void setCpf(String cpf) {
-        this.txtcpf = cpf;
+        this.cpf = cpf;
     }
     public String getGenero() {
-        return combgen;
+        return genero;
     }
     public void setGenero(String genero) {
-        this.combgen = genero;
+        this.genero = genero;
     }
     public String getDataNascimento() {
-        return txtdata;
+        return dataNascimento;
     }
     public void setDataNascimento(String dataNascimento) {
-        this.txtdata = dataNascimento;
+        this.dataNascimento = dataNascimento;
     }
     public String getTelefone() {
-        return txt_telefone;
+        return telefone;
     }
     public void setTelefone(String telefone) {
-        this.txt_telefone = telefone;
+        this.telefone = telefone;
     }
     public String getEmail() {
-        return txtemail;
+        return email;
     }
     public void setEmail(String email) {
-        this.txtemail = email;
+        this.email = email;
     }
     public String getLogin() {
-        return txtlogin;
+        return login;
     }
     public void setLogin(String login) {
-        this.txtlogin = login;
+        this.login = login;
     }
     public String getSenha() {
-        return txtsenha;
+        return senha;
     }
     public void setSenha(String senha) {
-        this.txtsenha = senha;
+        this.senha = senha;
     }
     public Endereco getEndereco() {
         return endereco;
@@ -151,12 +155,12 @@ public boolean equals(Object obj) {
         return false;
     }
     Usuario outro = (Usuario) obj;
-    return Objects.equals(this.txtlogin, outro.txtlogin);
+    return Objects.equals(this.login, outro.login);
 }
 
 @Override
 public int hashCode() {
-    return Objects.hash(txtlogin);
+    return Objects.hash(login);
 }
 
  public Long getId() { return id; }
