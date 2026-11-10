@@ -7,7 +7,8 @@ import javax.swing.JOptionPane;
 import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
 import br.com.ifba.usuario.entity.Usuario;
-import br.com.ifba.usuario.repositorio.RepositorioUsuarioEmMemoria;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import jakarta.persistence.PersistenceException;
 /**
  *
  * @author PC
@@ -16,8 +17,9 @@ import br.com.ifba.usuario.repositorio.RepositorioUsuarioEmMemoria;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
-    private final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
-
+    
+    private final UsuarioDao dao = new UsuarioDao();//no lugar do RepositorioUsuarioEmMemoria
+    
     /**
      * cria tela de cadastro de usuario
      */
@@ -277,15 +279,18 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         usuario.setTelefone(telefone);
         usuario.setEmail(email);
 
-        try {
-            repositorio.cadastrar(usuario);
-            JOptionPane.showMessageDialog(this,
-                    "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
-                    "Cadastro", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+            try {
+                dao.salvar(usuario); //so mostra se graovu mesmo
+                JOptionPane.showMessageDialog(this,
+                        "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
+                        "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IllegalArgumentException e) { //login repetido
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (PersistenceException e) { //banco offline
+                JOptionPane.showMessageDialog(this,
+                        "Não foi possível cadastrar o usuário. Verifique a conexão com o banco de dados.",
+                        "Erro", JOptionPane.ERROR_MESSAGE);
+            }
     }//GEN-LAST:event_btnCadastrarActionPerformed
     }
     private void combgenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combgenActionPerformed
