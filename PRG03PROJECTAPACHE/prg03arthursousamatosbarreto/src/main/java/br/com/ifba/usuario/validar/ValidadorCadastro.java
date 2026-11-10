@@ -8,7 +8,10 @@ package br.com.ifba.usuario.validar;
  *
  * @author PC
  */
+
 public class ValidadorCadastro {
+    public static final int TAMANHO_SENHA_MINIMO = 3;
+    public static final int TAMANHO_SENHA_MAXIMO = 20;
     public static boolean cpfValido(String cpf) { //validacao de cpf se tem exatamente 11 digitos ignorando pontuacao e hifen
         if (cpf == null) {
             return false;
@@ -17,11 +20,11 @@ public class ValidadorCadastro {
         return somenteNumeros.length() == 11;
     }
 
-    public static boolean senhaForte(String senha) { //validacao de senha se tem mais que 3 caracteres e menos que 20 caracteres
+    public static boolean senhaForte(String senha) { 
         if (senha == null) {
             return false;
         }
-        return senha.length() >= 3 && senha.length() <= 20;
+        return senha.length() >= TAMANHO_SENHA_MINIMO && senha.length() <= TAMANHO_SENHA_MAXIMO;
     }
 
     public static boolean camposPreenchidos(String... campos) { //validacao se todos os campos estao preenchidos

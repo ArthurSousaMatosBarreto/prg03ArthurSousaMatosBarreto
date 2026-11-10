@@ -85,7 +85,7 @@ public class UsuarioDao {
     public List<Usuario> listar() {
         EntityManager em = JPAUtil.getEntityManager();
         try {
-            return em.createQuery("SELECT u FROM Usuario u ORDER BY u.txtnome", Usuario.class)
+            return em.createQuery("SELECT u FROM Usuario u ORDER BY u.nome", Usuario.class)
                     .getResultList();
         } finally {
             em.close();
@@ -97,7 +97,7 @@ public class UsuarioDao {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT u FROM Usuario u WHERE LOWER(u.txtnome) LIKE LOWER(:termo) ORDER BY u.txtnome",
+                    "SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:termo) ORDER BY u.txtnome",
                     Usuario.class)
                     .setParameter("termo", "%" + termo + "%")
                     .getResultList();
@@ -108,7 +108,7 @@ public class UsuarioDao {
 
     // true se já existe OUTRO usuário com esse login
     private boolean loginJaExiste(EntityManager em, String login, Long idIgnorado) {
-        String jpql = "SELECT COUNT(u) FROM Usuario u WHERE u.txtlogin = :login";
+        String jpql = "SELECT COUNT(u) FROM Usuario u WHERE u.login = :login";
         if (idIgnorado != null) {
             jpql += " AND u.id <> :id";
         }
@@ -125,5 +125,21 @@ public class UsuarioDao {
             throw new UsuarioNaoEncontradoException(id);
         }
         return usuario;
+    }
+    // busca pelo login, lanca UsuarioNaoEncontradoException se nao existir
+    public Usuario buscarPorLogin(String login) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            List<Usuario> resultado = em.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.login = :login", Usuario.class)
+                    .setParameter("login", login)
+                    .getResultList();
+            if (resultado.isEmpty()) {
+                throw new UsuarioNaoEncontradoException(login);
+            }
+            return resultado.get(0);
+        } finally {
+            em.close();
+        }
     }
 }

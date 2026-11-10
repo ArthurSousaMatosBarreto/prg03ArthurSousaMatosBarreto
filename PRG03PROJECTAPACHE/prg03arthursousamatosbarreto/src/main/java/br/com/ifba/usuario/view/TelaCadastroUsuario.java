@@ -266,7 +266,9 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "CPF inválido.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else if (!ValidadorCadastro.senhaForte(senha)) {
-            JOptionPane.showMessageDialog(this, "Senha deve ter entre 3 e 20 caracteres.",
+            JOptionPane.showMessageDialog(this,
+                    "Senha deve ter entre " + ValidadorCadastro.TAMANHO_SENHA_MINIMO
+                    + " e " + ValidadorCadastro.TAMANHO_SENHA_MAXIMO + " caracteres.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else if (ValidadorCadastro.contemPalavraProibida(login)) {
             JOptionPane.showMessageDialog(this,
