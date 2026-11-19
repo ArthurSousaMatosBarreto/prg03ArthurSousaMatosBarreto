@@ -97,7 +97,7 @@ public class UsuarioDao {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:termo) ORDER BY u.txtnome",
+                    "SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:termo) ORDER BY u.nome",
                     Usuario.class)
                     .setParameter("termo", "%" + termo + "%")
                     .getResultList();

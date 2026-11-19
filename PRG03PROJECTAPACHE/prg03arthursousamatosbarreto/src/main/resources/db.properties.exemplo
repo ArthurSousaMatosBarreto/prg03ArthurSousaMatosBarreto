@@ -1,0 +1,3 @@
+db.url=jdbc:postgresql://localhost:5432/sistema_academico
+db.user=
+db.password=
