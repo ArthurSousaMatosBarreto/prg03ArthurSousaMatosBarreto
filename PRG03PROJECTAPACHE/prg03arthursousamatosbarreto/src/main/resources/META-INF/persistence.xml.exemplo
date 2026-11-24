@@ -6,11 +6,12 @@
     <persistence-unit name="sistemaAcademicoPU" transaction-type="RESOURCE_LOCAL">
         <class>br.com.ifba.usuario.entity.Usuario</class>
         <properties>
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/sistema_academico"/>
-            <property name="jakarta.persistence.jdbc.user" value=""/>
-            <property name="jakarta.persistence.jdbc.password" value=""/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+<property name="jakarta.persistence.jdbc.url"
+          value="jdbc:mysql://localhost:3306/sistema_academico?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;createDatabaseIfNotExist=true"/>
+<property name="jakarta.persistence.jdbc.user" value=""/>
+<property name="jakarta.persistence.jdbc.password" value=""/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>

@@ -42,6 +42,12 @@ public class Usuario extends PersistenceEntity implements Autenticavel{
 
     @Column(name = "txtsenha", nullable = false)
     private String senha;
+    
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo = true;
+
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_usuario")
