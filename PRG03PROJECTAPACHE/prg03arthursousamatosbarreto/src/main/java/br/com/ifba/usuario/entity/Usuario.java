@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import br.com.ifba.infrastructure.entity.PersistenceEntity;
  
 /**
  *
@@ -16,11 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements Autenticavel{
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Usuario extends PersistenceEntity implements Autenticavel{
 
     @Column(name = "txtnome", nullable = false)
     private String nome;
@@ -162,6 +159,4 @@ public boolean equals(Object obj) {
 public int hashCode() {
     return Objects.hash(login);
 }
-
- public Long getId() { return id; }
 }

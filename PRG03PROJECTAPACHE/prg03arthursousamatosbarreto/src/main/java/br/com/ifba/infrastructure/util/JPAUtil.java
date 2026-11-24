@@ -7,7 +7,7 @@ package br.com.ifba.infrastructure.util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceException;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 
 public final class JPAUtil {
 
@@ -23,10 +23,8 @@ public final class JPAUtil {
         if (fabrica == null) {
             try {
                 fabrica = Persistence.createEntityManagerFactory(UNIDADE);
-            } catch (PersistenceException e) {
-                throw e;
             } catch (RuntimeException e) {
-                throw new PersistenceException("Não foi possível conectar ao banco de dados.", e);
+                throw new PersistenciaException("Não foi possível conectar ao banco de dados.", e);
             }
         }
         return fabrica;
