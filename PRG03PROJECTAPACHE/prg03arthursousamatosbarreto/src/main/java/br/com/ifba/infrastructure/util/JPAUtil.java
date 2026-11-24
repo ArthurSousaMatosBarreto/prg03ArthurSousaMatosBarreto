@@ -4,7 +4,7 @@
  */
 package br.com.ifba.infrastructure.util;
 
-import jakarta.persistence.EntityManager;
+    import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
