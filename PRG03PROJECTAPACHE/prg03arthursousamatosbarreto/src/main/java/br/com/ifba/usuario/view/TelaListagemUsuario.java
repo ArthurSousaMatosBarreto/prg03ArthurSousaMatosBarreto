@@ -184,7 +184,7 @@ public class TelaListagemUsuario extends JFrame {
     private void carregar() {
         String termo = txtBusca.getText().trim();
         try {
-            List<Usuario> lista = termo.isEmpty() ? dao.listar() : dao.buscarPorNome(termo);
+            List<Usuario> lista = termo.isEmpty() ? dao.findAll() : dao.findByNome(termo);
             preencherTabela(lista);
         } catch (PersistenceException e) {
             JOptionPane.showMessageDialog(this,
@@ -231,7 +231,7 @@ public class TelaListagemUsuario extends JFrame {
             return;
         }
         try {
-            dao.remover(usuario.getId());
+            dao.delete(usuario);
             carregar();
             // so chega aqui se removeu de verdade
             JOptionPane.showMessageDialog(this, "Usuário excluído com sucesso!",

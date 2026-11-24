@@ -168,7 +168,7 @@ public class TelaLogin extends javax.swing.JFrame {
         String senhaDigitada = new String(txtSenha.getPassword());
 
         try {
-            Usuario usuario = new UsuarioDao().buscarPorLogin(loginDigitado);
+            Usuario usuario = new UsuarioDao().findByLogin(loginDigitado);
             if (usuario.autenticar(loginDigitado, senhaDigitada)) {
                 JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
             } else {

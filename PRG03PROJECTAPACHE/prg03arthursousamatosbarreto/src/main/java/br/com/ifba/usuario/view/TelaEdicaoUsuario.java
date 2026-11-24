@@ -89,7 +89,7 @@ public class TelaEdicaoUsuario extends JFrame {
             usuario.setGenero((String) cmbGenero.getSelectedItem());
             usuario.setLogin(login);
 
-            dao.atualizar(usuario);
+            dao.update(usuario);
 
             // a mensagem de sucesso so aparece depois de gravar de verdade
             JOptionPane.showMessageDialog(this, "Usuário atualizado com sucesso!",

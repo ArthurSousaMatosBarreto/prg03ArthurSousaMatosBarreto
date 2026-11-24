@@ -8,7 +8,7 @@ import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.dao.UsuarioDao;
-import jakarta.persistence.PersistenceException;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 /**
  *
  * @author PC
@@ -282,13 +282,13 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         usuario.setEmail(email);
 
             try {
-                dao.salvar(usuario); //so mostra se graovu mesmo
-                JOptionPane.showMessageDialog(this,
-                        "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
+                dao.save(usuario);      // e não dao.salvar(usuario)
+                JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
                         "Cadastro", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IllegalArgumentException e) { //login repetido
+            } catch (IllegalArgumentException e) {            // login repetido
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (PersistenceException e) { //banco offline
+            } catch (PersistenciaException e) {               // erro de banco
+                logger.log(java.util.logging.Level.SEVERE, "Falha ao cadastrar usuário", e);
                 JOptionPane.showMessageDialog(this,
                         "Não foi possível cadastrar o usuário. Verifique a conexão com o banco de dados.",
                         "Erro", JOptionPane.ERROR_MESSAGE);

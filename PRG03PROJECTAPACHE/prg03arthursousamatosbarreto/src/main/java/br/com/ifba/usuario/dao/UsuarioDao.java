@@ -1,134 +1,46 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.ifba.usuario.dao;
 
-import br.com.ifba.infrastructure.util.JPAUtil;
+import br.com.ifba.infrastructure.dao.GenericDao;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class UsuarioDao {
+public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
 
-    // cadastrar: persist dentro de transação
-    public void salvar(Usuario usuario) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            if (loginJaExiste(em, usuario.getLogin(), null)) {
-                throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
-            }
-            em.getTransaction().begin();
-            em.persist(usuario);
-            em.getTransaction().commit();
-        } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
+    public UsuarioDao() {
+        super(Usuario.class);
     }
 
-    // editar: merge dentro de transação
-    public Usuario atualizar(Usuario usuario) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            exigirEncontrado(em.find(Usuario.class, usuario.getId()), usuario.getId());
-            if (loginJaExiste(em, usuario.getLogin(), usuario.getId())) {
-                throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
-            }
-            Usuario atualizado = em.merge(usuario);
-            em.getTransaction().commit();
-            return atualizado;
-        } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
+    // login repetido: regra checada antes de gravar (na Aula 21 ela vai pro Service)
+    @Override
+    public Usuario save(Usuario usuario) {
+        if (loginJaExiste(usuario.getLogin(), null)) {
+            throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
         }
+        return super.save(usuario);
     }
 
-    // excluir: remove dentro de transação
-    public void remover(Long id) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            Usuario usuario = exigirEncontrado(em.find(Usuario.class, id), id);
-            em.remove(usuario);
-            em.getTransaction().commit();
-        } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
+    @Override
+    public Usuario update(Usuario usuario) {
+        exigirEncontrado(super.findById(usuario.getId()), usuario.getId());
+        if (loginJaExiste(usuario.getLogin(), usuario.getId())) {
+            throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
         }
+        return super.update(usuario);
     }
 
-    public Usuario buscarPorId(Long id) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            return exigirEncontrado(em.find(Usuario.class, id), id);
-        } finally {
-            em.close();
-        }
+    // continua lançando a exceção própria em vez de devolver null
+    @Override
+    public Usuario findById(Long id) {
+        return exigirEncontrado(super.findById(id), id);
     }
 
-    public List<Usuario> listar() {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            return em.createQuery("SELECT u FROM Usuario u ORDER BY u.nome", Usuario.class)
-                    .getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    // Task 07: JPQL com where, parâmetro nomeado (nunca concatenar texto na consulta)
-    public List<Usuario> buscarPorNome(String termo) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            return em.createQuery(
-                    "SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:termo) ORDER BY u.nome",
-                    Usuario.class)
-                    .setParameter("termo", "%" + termo + "%")
-                    .getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    // true se já existe OUTRO usuário com esse login
-    private boolean loginJaExiste(EntityManager em, String login, Long idIgnorado) {
-        String jpql = "SELECT COUNT(u) FROM Usuario u WHERE u.login = :login";
-        if (idIgnorado != null) {
-            jpql += " AND u.id <> :id";
-        }
-        TypedQuery<Long> consulta = em.createQuery(jpql, Long.class).setParameter("login", login);
-        if (idIgnorado != null) {
-            consulta.setParameter("id", idIgnorado);
-        }
-        return consulta.getSingleResult() > 0;
-    }
-
-    // regra que dispara a exceção, isolada para testar sem banco (Task 08)
-    static Usuario exigirEncontrado(Usuario usuario, Long id) {
-        if (usuario == null) {
-            throw new UsuarioNaoEncontradoException(id);
-        }
-        return usuario;
-    }
-    // busca pelo login, lanca UsuarioNaoEncontradoException se nao existir
-    public Usuario buscarPorLogin(String login) {
-        EntityManager em = JPAUtil.getEntityManager();
+    @Override
+    public Usuario findByLogin(String login) {
+        EntityManager em = abrirEntityManager();
         try {
             List<Usuario> resultado = em.createQuery(
                     "SELECT u FROM Usuario u WHERE u.login = :login", Usuario.class)
@@ -138,8 +50,56 @@ public class UsuarioDao {
                 throw new UsuarioNaoEncontradoException(login);
             }
             return resultado.get(0);
+        } catch (UsuarioNaoEncontradoException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new PersistenciaException("Erro ao buscar por login", e);
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public List<Usuario> findByNome(String termo) {
+        EntityManager em = abrirEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:termo) ORDER BY u.nome",
+                    Usuario.class)
+                    .setParameter("termo", "%" + termo + "%")
+                    .getResultList();
+        } catch (RuntimeException e) {
+            throw new PersistenciaException("Erro ao buscar por nome", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    // true se já existe OUTRO usuário com esse login
+    private boolean loginJaExiste(String login, Long idIgnorado) {
+        EntityManager em = abrirEntityManager();
+        try {
+            String jpql = "SELECT COUNT(u) FROM Usuario u WHERE u.login = :login";
+            if (idIgnorado != null) {
+                jpql += " AND u.id <> :id";
+            }
+            TypedQuery<Long> consulta = em.createQuery(jpql, Long.class).setParameter("login", login);
+            if (idIgnorado != null) {
+                consulta.setParameter("id", idIgnorado);
+            }
+            return consulta.getSingleResult() > 0;
+        } catch (RuntimeException e) {
+            throw new PersistenciaException("Erro ao verificar login", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    // regra que dispara a exceção, isolada para testar sem banco
+    static Usuario exigirEncontrado(Usuario usuario, Long id) {
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException(id);
+        }
+        return usuario;
     }
 }
