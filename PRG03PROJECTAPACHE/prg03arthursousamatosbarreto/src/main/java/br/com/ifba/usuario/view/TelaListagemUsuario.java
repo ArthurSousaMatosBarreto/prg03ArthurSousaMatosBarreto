@@ -1,10 +1,10 @@
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.login.view.TelaLogin;
-import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
-import jakarta.persistence.PersistenceException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -37,21 +37,16 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-/**
- * Tela de listagem de usuarios (CRUD), no formato do slide de exemplo:
- * busca + botao "+" + Homescreen em cima, e a tabela com as colunas
- * REMOVER e EDITAR em cada linha. Apenas componentes: a persistencia
- * entra na Parte 2.
- */
 public class TelaListagemUsuario extends JFrame {
 
     private static final Color AZUL_ESCURO = new Color(23, 42, 69);
-
     // posicao das colunas de acao na tabela
     private static final int COL_REMOVER = 3;
     private static final int COL_EDITAR = 4;
 
-    private final UsuarioDao dao = new UsuarioDao();
+    // recebido de fora (injecao de dependencia): a tela nao cria o controller
+    private final UsuarioIController controller;
+
     // usuarios que estao na tabela agora, na mesma ordem das linhas
     private List<Usuario> usuariosExibidos = new ArrayList<>();
     private DefaultTableModel modelo;
@@ -61,7 +56,9 @@ public class TelaListagemUsuario extends JFrame {
     private final JButton btnHomescreen = new JButton("Homescreen");
     private final JTable tblUsuarios;
 
-    public TelaListagemUsuario() {
+    public TelaListagemUsuario(UsuarioIController controller) {
+        this.controller = controller;
+
         setTitle("Listagem de Usuários");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(760, 480);
@@ -110,7 +107,7 @@ public class TelaListagemUsuario extends JFrame {
 
         // volta para a tela inicial do sistema (o login)
         btnHomescreen.addActionListener(e -> {
-            new TelaLogin().setVisible(true);
+            new TelaLogin(controller).setVisible(true);
             dispose();
         });
         barra.add(btnHomescreen, BorderLayout.EAST);
@@ -180,18 +177,20 @@ public class TelaListagemUsuario extends JFrame {
 
         return tabela;
     }
+
     // busca no banco (todos, ou so os que contem o texto digitado) e atualiza a tabela
     private void carregar() {
         String termo = txtBusca.getText().trim();
         try {
-            List<Usuario> lista = termo.isEmpty() ? dao.findAll() : dao.findByNome(termo);
+            List<Usuario> lista = termo.isEmpty() ? controller.findAll() : controller.findByNome(termo);
             preencherTabela(lista);
-        } catch (PersistenceException e) {
+        } catch (PersistenciaException e) {
             JOptionPane.showMessageDialog(this,
                     "Não foi possível carregar os usuários. Verifique a conexão com o banco de dados.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     // senha nunca vai para a tabela (ver RETROSPECTIVA.md)
     private void preencherTabela(List<Usuario> lista) {
         usuariosExibidos = lista;
@@ -201,6 +200,7 @@ public class TelaListagemUsuario extends JFrame {
             modelo.addRow(new Object[]{u.getNome(), u.getLogin(), tipo, new IconeLixeira(), new IconeEditar()});
         }
     }
+
     // quando a outra tela fecha, a listagem busca os dados de novo
     private void recarregarAoFechar(JFrame tela) {
         tela.addWindowListener(new WindowAdapter() {
@@ -210,18 +210,21 @@ public class TelaListagemUsuario extends JFrame {
             }
         });
     }
+
     private void abrirCadastro() {
-        TelaCadastroUsuario tela = new TelaCadastroUsuario();
+        TelaCadastroUsuario tela = new TelaCadastroUsuario(controller);
         // fechar o cadastro pelo X nao pode encerrar o sistema inteiro quando ele foi aberto daqui
         tela.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         recarregarAoFechar(tela);
         tela.setVisible(true);
     }
+
     private void abrirEdicao(Usuario usuario) {
-        TelaEdicaoUsuario tela = new TelaEdicaoUsuario(usuario);
+        TelaEdicaoUsuario tela = new TelaEdicaoUsuario(controller, usuario);
         recarregarAoFechar(tela);
         tela.setVisible(true);
     }
+
     // JOptionPane pergunta se o usuario deseja excluir; so remove se confirmar
     private void confirmarExclusao(Usuario usuario) {
         int opcao = JOptionPane.showConfirmDialog(this,
@@ -231,7 +234,7 @@ public class TelaListagemUsuario extends JFrame {
             return;
         }
         try {
-            dao.delete(usuario);
+            controller.delete(usuario);
             carregar();
             // so chega aqui se removeu de verdade
             JOptionPane.showMessageDialog(this, "Usuário excluído com sucesso!",
@@ -241,24 +244,23 @@ public class TelaListagemUsuario extends JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
             carregar();
-        } catch (PersistenceException e) {
+        } catch (PersistenciaException e) {
             JOptionPane.showMessageDialog(this,
                     "Não foi possível excluir o usuário. Verifique a conexão com o banco de dados.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
-    }
+        }
     }
 
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> new TelaListagemUsuario().setVisible(true));
-    }
     /** Campo de texto que mostra uma dica enquanto esta vazio. */
     private static class CampoComDica extends JTextField {
+
         private final String dica;
 
         CampoComDica(String dica, int colunas) {
             super(colunas);
             this.dica = dica;
         }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -270,11 +272,13 @@ public class TelaListagemUsuario extends JFrame {
                 int y = (getHeight() + g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent()) / 2;
                 g2.drawString(dica, in.left, y);
                 g2.dispose();
+            }
+        }
     }
-    }
-    }
+
     /** Base dos icones 20x20 desenhados com Graphics2D. */
     private abstract static class IconeDesenhado implements Icon {
+
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -285,17 +289,22 @@ public class TelaListagemUsuario extends JFrame {
             desenhar(g2);
             g2.dispose();
         }
+
         abstract void desenhar(Graphics2D g2);
+
         @Override
         public int getIconWidth() {
             return 20;
         }
+
         @Override
         public int getIconHeight() {
             return 20;
         }
     }
+
     private static class IconeLixeira extends IconeDesenhado {
+
         @Override
         void desenhar(Graphics2D g2) {
             g2.drawLine(3, 5, 17, 5);          // tampa
@@ -306,7 +315,9 @@ public class TelaListagemUsuario extends JFrame {
             g2.drawLine(12, 9, 12, 15);
         }
     }
+
     private static class IconeEditar extends IconeDesenhado {
+
         @Override
         void desenhar(Graphics2D g2) {
             g2.drawRoundRect(3, 4, 13, 13, 3, 3); // quadrado
@@ -314,19 +325,23 @@ public class TelaListagemUsuario extends JFrame {
             g2.drawLine(8, 12, 16, 4);            // lapis
         }
     }
+
     private static class IconeLupa extends IconeDesenhado {
+
         @Override
         void desenhar(Graphics2D g2) {
             g2.drawOval(3, 3, 10, 10);
             g2.drawLine(11, 11, 17, 17);
         }
     }
+
     private static class IconeMais extends IconeDesenhado {
+
         @Override
         void desenhar(Graphics2D g2) {
             g2.drawOval(2, 2, 16, 16);
             g2.drawLine(10, 6, 10, 14);
             g2.drawLine(6, 10, 14, 10);
-}
-}
+        }
+    }
 }

@@ -2,6 +2,12 @@ package br.com.ifba.prg03arthursousamatosbarreto;
 
 import br.com.ifba.infrastructure.util.JPAUtil;
 import br.com.ifba.login.view.TelaLogin;
+import br.com.ifba.usuario.controller.UsuarioController;
+import br.com.ifba.usuario.controller.UsuarioIController;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.dao.UsuarioIDao;
+import br.com.ifba.usuario.service.UsuarioIService;
+import br.com.ifba.usuario.service.UsuarioService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -32,7 +38,12 @@ public class Prg03arthursousamatosbarreto {
         }
 
         // 2º: só depois a aplicação sobe
+        // monta as camadas, de baixo pra cima; só o main sabe quais classes existem
+        UsuarioIDao dao = new UsuarioDao();
+        UsuarioIService service = new UsuarioService(dao);
+        UsuarioIController controller = new UsuarioController(service);
+
         Runtime.getRuntime().addShutdownHook(new Thread(JPAUtil::fechar));
-        java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new TelaLogin(controller).setVisible(true));
     }
 }

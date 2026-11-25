@@ -1,10 +1,11 @@
 package br.com.ifba.usuario.view;
 
-import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.infrastructure.exception.NegocioException;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
-import jakarta.persistence.PersistenceException;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -19,13 +20,17 @@ import javax.swing.JTextField;
 
 /**
  * Tela de edicao de usuario (CRUD). Edita apenas nome, genero e login.
- * Apenas componentes, a gravacao no banco entra na Parte 2.
+ * Fala so com o Controller: as regras (login proibido, login repetido)
+ * ficam no Service.
  */
-
 
 public class TelaEdicaoUsuario extends JFrame {
 
-    private final UsuarioDao dao = new UsuarioDao();
+    private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(TelaEdicaoUsuario.class.getName());
+
+    // recebido de fora (injecao de dependencia): a tela nao cria o controller
+    private final UsuarioIController controller;
     private final Usuario usuario; // o usuario que veio do banco (com id)
 
     private final JTextField txtNome = new JTextField();
@@ -35,7 +40,8 @@ public class TelaEdicaoUsuario extends JFrame {
     private final JButton btnSalvar = new JButton("Salvar alterações");
     private final JButton btnCancelar = new JButton("Cancelar");
 
-    public TelaEdicaoUsuario(Usuario usuario) {
+    public TelaEdicaoUsuario(UsuarioIController controller, Usuario usuario) {
+        this.controller = controller;
         this.usuario = usuario;
 
         setTitle("Tela de Edição");
@@ -71,13 +77,9 @@ public class TelaEdicaoUsuario extends JFrame {
         String nome = txtNome.getText().trim();
         String login = txtLogin.getText().trim();
 
+        // a tela so confere o que e conveniencia de formulario
         if (!ValidadorCadastro.camposPreenchidos(nome, login)) {
             JOptionPane.showMessageDialog(this, "Preencha nome e login.",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (ValidadorCadastro.contemPalavraProibida(login)) {
-            JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -89,7 +91,7 @@ public class TelaEdicaoUsuario extends JFrame {
             usuario.setGenero((String) cmbGenero.getSelectedItem());
             usuario.setLogin(login);
 
-            dao.update(usuario);
+            controller.update(usuario);
 
             // a mensagem de sucesso so aparece depois de gravar de verdade
             JOptionPane.showMessageDialog(this, "Usuário atualizado com sucesso!",
@@ -100,11 +102,12 @@ public class TelaEdicaoUsuario extends JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
             dispose();
-        } catch (IllegalArgumentException e) {
-            // login ja usado por outro usuario
+        } catch (NegocioException e) {
+            // regra do negocio (login proibido ou ja usado por outro usuario)
             JOptionPane.showMessageDialog(this, e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (PersistenceException e) {
+        } catch (PersistenciaException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Falha ao atualizar usuário", e);
             JOptionPane.showMessageDialog(this,
                     "Não foi possível salvar as alterações. Verifique a conexão com o banco de dados.",
                     "Erro", JOptionPane.ERROR_MESSAGE);

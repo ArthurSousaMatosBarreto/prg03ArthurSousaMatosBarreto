@@ -7,8 +7,10 @@ import javax.swing.JOptionPane;
 import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.validar.ValidadorCadastro;
 import br.com.ifba.usuario.entity.Usuario;
-import br.com.ifba.usuario.dao.UsuarioDao;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.controller.UsuarioIController;
+import br.com.ifba.infrastructure.exception.NegocioException;
+
 /**
  *
  * @author PC
@@ -18,12 +20,13 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
     
-    private final UsuarioDao dao = new UsuarioDao();//no lugar do RepositorioUsuarioEmMemoria
+    private final UsuarioIController controller;
     
     /**
      * cria tela de cadastro de usuario
      */
-    public TelaCadastroUsuario() {
+    public TelaCadastroUsuario(UsuarioIController controller) {
+        this.controller = controller;
         initComponents();
         jtextfieldmain.setEditable(false);
         jtextfieldmain.setFocusable(false);
@@ -239,7 +242,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // volta pra tela de login
-        TelaLogin telaLogin = new TelaLogin();
+        TelaLogin telaLogin = new TelaLogin(controller);
         telaLogin.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
@@ -248,53 +251,43 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         // pega todas as informacoes do cadastro
         String nome = txtnome.getText();
         String cpf = txtcpf.getText();
-        String genero = (String) combgen.getSelectedItem(); //combo list de genero
+        String genero = (String) combgen.getSelectedItem();
         String dataNascimento = txtdata.getText();
         String telefone = txt_telefone.getText();
         String email = txtemail.getText();
         String login = txtlogin.getText();
         String senha = new String(txtsenha.getPassword());
         String confirmarSenha = new String(txtsenhaconf.getPassword());
-        
+
+        // a tela só valida o que é conveniência de formulário
         if (!ValidadorCadastro.camposPreenchidos(nome, cpf, dataNascimento, telefone, email, login, senha, confirmarSenha)) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
         } else if (!senha.equals(confirmarSenha)) {
             JOptionPane.showMessageDialog(this, "As senhas não coincidem.",
                     "Erro", JOptionPane.ERROR_MESSAGE);
-        } else if (!ValidadorCadastro.cpfValido(cpf)) {
-            JOptionPane.showMessageDialog(this, "CPF inválido.",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-        } else if (!ValidadorCadastro.senhaForte(senha)) {
-            JOptionPane.showMessageDialog(this,
-                    "Senha deve ter entre " + ValidadorCadastro.TAMANHO_SENHA_MINIMO
-                    + " e " + ValidadorCadastro.TAMANHO_SENHA_MAXIMO + " caracteres.",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-        } else if (ValidadorCadastro.contemPalavraProibida(login)) {
-            JOptionPane.showMessageDialog(this,
-                    "Login contém palavra não permitida.",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
         } else {
             Usuario usuario = new Usuario(nome, cpf, login, senha);
-        usuario.setGenero(genero);
-        usuario.setDataNascimento(dataNascimento);
-        usuario.setTelefone(telefone);
-        usuario.setEmail(email);
+            usuario.setGenero(genero);
+            usuario.setDataNascimento(dataNascimento);
+            usuario.setTelefone(telefone);
+            usuario.setEmail(email);
 
             try {
-                dao.save(usuario);      // e não dao.salvar(usuario)
+                controller.save(usuario);
                 JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
                         "Cadastro", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IllegalArgumentException e) {            // login repetido
+            } catch (NegocioException e) {            // regra do negócio: mostra a mensagem do Service
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (PersistenciaException e) {               // erro de banco
+            } catch (PersistenciaException e) {       // erro de banco
                 logger.log(java.util.logging.Level.SEVERE, "Falha ao cadastrar usuário", e);
                 JOptionPane.showMessageDialog(this,
                         "Não foi possível cadastrar o usuário. Verifique a conexão com o banco de dados.",
                         "Erro", JOptionPane.ERROR_MESSAGE);
             }
+        }
     }//GEN-LAST:event_btnCadastrarActionPerformed
-    }
+
     private void combgenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combgenActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_combgenActionPerformed
@@ -302,31 +295,6 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     private void txtsenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsenhaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsenhaActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaCadastroUsuario().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrar;
