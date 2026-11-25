@@ -3,29 +3,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.ifba.login.view;
-import br.com.ifba.usuario.view.TelaCadastroUsuario;
-import br.com.ifba.usuario.entity.Usuario;
 import javax.swing.JOptionPane;
-import br.com.ifba.usuario.entity.Aluno;
-import br.com.ifba.usuario.entity.Professor;
-import br.com.ifba.usuario.entity.descreverPapel;
-import br.com.ifba.usuario.dao.UsuarioDao;
-import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
-import jakarta.persistence.PersistenceException;
+import br.com.ifba.usuario.controller.UsuarioIController;
+import br.com.ifba.infrastructure.exception.NegocioException;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.view.TelaCadastroUsuario;
 
 
 /**
  *
  * @author PC
  */
-public class TelaLogin extends javax.swing.JFrame {
+    public class TelaLogin extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLogin.class.getName());
-
+    private final UsuarioIController controller;
     /**
      * Creates new form TelaLogin
      */
-    public TelaLogin() {
+    public TelaLogin(UsuarioIController controller) {
+        this.controller = controller;
         initComponents();
         Jtextfieldlogin.setEditable(false);
         Jtextfieldlogin.setFocusable(false);
@@ -168,30 +165,23 @@ public class TelaLogin extends javax.swing.JFrame {
         String senhaDigitada = new String(txtSenha.getPassword());
 
         try {
-            Usuario usuario = new UsuarioDao().findByLogin(loginDigitado);
-            if (usuario.autenticar(loginDigitado, senhaDigitada)) {
-                JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (UsuarioNaoEncontradoException e) {
-            JOptionPane.showMessageDialog(this, "Login ou senha incorretos.", "Login", JOptionPane.ERROR_MESSAGE); 
-        } catch (PersistenceException e) {
+            controller.autenticar(loginDigitado, senhaDigitada);
+            JOptionPane.showMessageDialog(this, "Acesso liberado!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Login", JOptionPane.ERROR_MESSAGE);
+        } catch (PersistenciaException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Falha ao autenticar", e);
             JOptionPane.showMessageDialog(this,
                     "Não foi possível acessar o banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        lblResultado.setText( 
-                "<html>Login Digitado: " + loginDigitado + "<br>"
-                + "Senha digitada: " + senhaDigitada + "</html>"
-        );
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void txtSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSenhaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtSenhaActionPerformed
-
+    
     private void lblCadastreseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCadastreseMouseClicked
-        TelaCadastroUsuario telaCadastro = new TelaCadastroUsuario();
+        TelaCadastroUsuario telaCadastro = new TelaCadastroUsuario(controller);
         telaCadastro.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_lblCadastreseMouseClicked
@@ -199,31 +189,6 @@ public class TelaLogin extends javax.swing.JFrame {
     private void JtextfieldloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtextfieldloginActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_JtextfieldloginActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Jtextfieldlogin;

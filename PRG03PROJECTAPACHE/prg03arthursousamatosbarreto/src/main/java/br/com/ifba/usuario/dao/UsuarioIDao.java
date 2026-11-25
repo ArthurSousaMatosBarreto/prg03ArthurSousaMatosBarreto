@@ -9,4 +9,5 @@ public interface UsuarioIDao extends GenericIDao<Usuario> {
     Usuario findByLogin(String login);
 
     List<Usuario> findByNome(String termo);
+    boolean existsByLogin(String login, Long idIgnorado);
 }

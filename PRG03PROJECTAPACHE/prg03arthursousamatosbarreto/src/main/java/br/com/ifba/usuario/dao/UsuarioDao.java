@@ -13,25 +13,6 @@ public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
     public UsuarioDao() {
         super(Usuario.class);
     }
-
-    // login repetido: regra checada antes de gravar (na Aula 21 ela vai pro Service)
-    @Override
-    public Usuario save(Usuario usuario) {
-        if (loginJaExiste(usuario.getLogin(), null)) {
-            throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
-        }
-        return super.save(usuario);
-    }
-
-    @Override
-    public Usuario update(Usuario usuario) {
-        exigirEncontrado(super.findById(usuario.getId()), usuario.getId());
-        if (loginJaExiste(usuario.getLogin(), usuario.getId())) {
-            throw new IllegalArgumentException("Já existe um usuário com o login: " + usuario.getLogin());
-        }
-        return super.update(usuario);
-    }
-
     // continua lançando a exceção própria em vez de devolver null
     @Override
     public Usuario findById(Long id) {
@@ -76,7 +57,8 @@ public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
     }
 
     // true se já existe OUTRO usuário com esse login
-    private boolean loginJaExiste(String login, Long idIgnorado) {
+    @Override
+    public boolean existsByLogin(String login, Long idIgnorado) {
         EntityManager em = abrirEntityManager();
         try {
             String jpql = "SELECT COUNT(u) FROM Usuario u WHERE u.login = :login";
